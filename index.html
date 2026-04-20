@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>VISION QUEST: COMMAND CENTER</title>
+    <link href="https://fonts.googleapis.com/css2?family=Syncopate:wght@700&family=Space+Grotesk:wght@300;700&display=swap" rel="stylesheet">
+    <style>
+        :root { --blue: #00f3ff; --pink: #ff00ff; --lime: #39ff14; --bg: #050508; --card: #11111a; }
+        body { background: var(--bg); color: #fff; font-family: 'Space Grotesk', sans-serif; margin: 0; padding: 20px; }
+        
+        /* DASHBOARD HEADER */
+        .nav-hub { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+        .stat-pill { background: var(--card); border: 1px solid #333; padding: 10px 15px; border-radius: 12px; font-size: 0.8rem; }
+        .stat-val { color: var(--lime); font-weight: bold; }
+
+        /* THE QUEST LOG */
+        .quest-log { background: var(--card); border-radius: 20px; padding: 20px; margin-bottom: 30px; border: 1px solid #222; }
+        .quest-item { display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid #222; font-size: 0.9rem; }
+        .status-tag { font-size: 0.7rem; padding: 2px 8px; border-radius: 4px; background: #222; }
+        .status-complete { color: var(--lime); border: 1px solid var(--lime); }
+
+        /* STORY BLOCKS */
+        .block { background: var(--card); border-radius: 24px; padding: 25px; margin-bottom: 30px; border-left: 5px solid var(--blue); display: none; }
+        .active { display: block; animation: slideIn 0.5s ease-out; }
+        
+        @keyframes slideIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+
+        .teacher-bubble { background: #1a1a2e; border-radius: 15px; padding: 15px; margin: 20px 0; border: 1px dashed var(--pink); font-size: 0.9rem; line-height: 1.4; }
+        .input-field { background: #000; border: 2px solid #333; border-radius: 12px; padding: 15px; width: 100%; color: var(--lime); font-size: 1.2rem; text-align: center; margin: 10px 0; font-family: 'Syncopate', sans-serif; }
+        .btn-unlock { background: var(--blue); color: #000; border: none; padding: 18px; width: 100%; border-radius: 15px; font-weight: 900; cursor: pointer; }
+        
+        /* LEDGER / GRADES */
+        .ledger-table { width: 100%; font-size: 0.8rem; margin-top: 20px; border-collapse: collapse; }
+        .ledger-table th { text-align: left; color: #555; padding-bottom: 10px; }
+        .ledger-table td { padding: 10px 0; border-top: 1px solid #222; }
+
+        .shake { animation: shake 0.4s ease-in-out; border-color: var(--pink) !important; }
+        @keyframes shake { 0%, 100% { transform: translateX(0); } 25% { transform: translateX(-5px); } 75% { transform: translateX(5px); } }
+    </style>
+</head>
+<body>
+
+    <div class="nav-hub">
+        <div>
+            <div style="font-size: 0.6rem; color: var(--blue);">STUDENT ID: VQ-2026</div>
+            <div style="font-family: 'Syncopate'; font-size: 0.9rem;">COMMAND CENTER</div>
+        </div>
+        <div class="stat-pill">PERFORMANCE: <span id="avg-grade" class="stat-val">0%</span></div>
+    </div>
+
+    <div class="quest-log">
+        <h3 style="margin-top:0; font-size: 0.8rem; letter-spacing: 2px;">ACTIVE QUESTS</h3>
+        <div class="quest-item">
+            <span>Module 1.1: Unit Pricing</span>
+            <span id="status-1" class="status-tag">LOCKED</span>
+        </div>
+        <div class="quest-item" style="color: #555;">
+            <span>Module 1.2: Fluid Dynamics</span>
+            <span id="status-2" class="status-tag">LOCKED</span>
+        </div>
+    </div>
+
+    <div id="lvl1" class="block active">
+        <span style="color:var(--blue)">SCIENCE + BUSINESS</span>
+        <h2>The Flour Audit</h2>
+        <div class="teacher-bubble">
+            "Don't just cook. Calculate. If you don't know your <b>Unit Cost</b>, you don't have a business, you have a hobby."
+        </div>
+        <p>HINT: $4.50 ÷ 18 Cups = ?</p>
+        <input type="number" id="q1" class="input-field" placeholder="ENTER UNIT PRICE">
+        <button class="btn-unlock" onclick="verify(1, 0.25, 'lvl2')">SUBMIT AUDIT</button>
+    </div>
+
+    <div id="lvl2" class="block">
+        <span style="color:var(--pink)">ENGINEERING</span>
+        <h2>Non-Newtonian Stress</h2>
+        <div class="teacher-bubble">
+            "When you apply pressure to Oobleck, the molecules lock together. Does it become a <b>SOLID</b> or a <b>GAS</b>?"
+        </div>
+        <input type="text" id="q2" class="input-field" placeholder="ANSWER">
+        <button class="btn-unlock" onclick="verify(2, 'SOLID', 'lvl3')">VERIFY MOLECULES</button>
+    </div>
+
+    <div id="lvl3" class="block">
+        <h2 style="color:var(--lime)">SHIFT COMPLETED</h2>
+        <p>All data synced to CEO Ledger. You are cleared for Season 2.</p>
+        <button class="btn-unlock" style="background:#222; color:#fff;" onclick="resetAll()">RESET SEMESTER</button>
+    </div>
+
+    <div class="quest-log">
+        <h3 style="font-size: 0.8rem; letter-spacing: 2px;">CEO LEDGER (GRADES)</h3>
+        <table class="ledger-table">
+            <thead><tr><th>MISSION</th><th>STATUS</th><th>GRADE</th></tr></thead>
+            <tbody id="ledger-body">
+                </tbody>
+        </table>
+    </div>
+
+    <script>
+        // ON LOAD: Check memory
+        window.onload = () => {
+            renderLedger();
+            checkProgress();
+        };
+
+        function verify(lvl, correct, nextId) {
+            const input = document.getElementById('q' + lvl);
+            const val = input.value.toUpperCase();
+            
+            if(val == correct) {
+                saveData(lvl, 'COMPLETED', '100%');
+                document.getElementById('lvl' + lvl).classList.remove('active');
+                document.getElementById(nextId).classList.add('active');
+                renderLedger();
+                checkProgress();
+                window.navigator.vibrate(50); 
+            } else {
+                input.classList.add('shake');
+                setTimeout(() => input.classList.remove('shake'), 400);
+                window.navigator.vibrate([100, 50, 100]);
+            }
+        }
+
+        function saveData(lvl, status, grade) {
+            let history = JSON.parse(localStorage.getItem('vq_history')) || {};
+            history[lvl] = { status, grade };
+            localStorage.setItem('vq_history', JSON.stringify(history));
+        }
+
+        function renderLedger() {
+            const history = JSON.parse(localStorage.getItem('vq_history')) || {};
+            const body = document.getElementById('ledger-body');
+            body.innerHTML = '';
+            
+            Object.keys(history).forEach(key => {
+                body.innerHTML += `<tr><td>Module ${key}</td><td>${history[key].status}</td><td style="color:var(--lime)">${history[key].grade}</td></tr>`;
+                const statusTag = document.getElementById('status-' + key);
+                if(statusTag) {
+                    statusTag.innerText = "COMPLETE";
+                    statusTag.classList.add('status-complete');
+                }
+            });
+
+            const count = Object.keys(history).length;
+            document.getElementById('avg-grade').innerText = count > 0 ? (count * 50) + "%" : "0%";
+        }
+
+        function checkProgress() {
+            const history = JSON.parse(localStorage.getItem('vq_history')) || {};
+            if(history[1] && !history[2]) {
+                document.getElementById('lvl1').classList.remove('active');
+                document.getElementById('lvl2').classList.add('active');
+            } else if (history[2]) {
+                document.getElementById('lvl1').classList.remove('active');
+                document.getElementById('lvl2').classList.remove('active');
+                document.getElementById('lvl3').classList.add('active');
+            }
+        }
+
+        function resetAll() {
+            if(confirm("Delete all grades and progress?")) {
+                localStorage.clear();
+                location.reload();
+            }
+        }
+    </script>
+</body>
+</html>
